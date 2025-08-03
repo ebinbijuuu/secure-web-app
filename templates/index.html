@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Web App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            min-height: 600px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .auth-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .auth-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .status-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .status-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .status-card.success {
+            border-left-color: #28a745;
+        }
+
+        .status-card.error {
+            border-left-color: #dc3545;
+        }
+
+        .status-card h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .status-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .token-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            word-break: break-all;
+            margin-top: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .password-requirements {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .password-requirements h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .requirement-icon {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .requirement.met .requirement-icon {
+            color: #28a745; /* Green for met requirements */
+        }
+
+        .requirement.met .requirement-text {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .requirement.not-met .requirement-icon {
+            color: #dc3545; /* Red for unmet requirements */
+        }
+
+        .requirement.not-met .requirement-text {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .requirement-icon {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .requirement.met .requirement-icon {
+            color: #28a745;
+            content: "✅";
+        }
+
+        .requirement.met .requirement-icon::before {
+            content: "✅";
+        }
+
+        .requirement.not-met .requirement-icon {
+            color: #dc3545;
+            content: "❌";
+        }
+
+        .requirement.not-met .requirement-icon::before {
+            content: "❌";
+        }
+
+        .requirement:not(.met):not(.not-met) .requirement-icon::before {
+            content: "";
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Secure Web App</h1>
+            <p>JWT Authentication & User Management System</p>
+        </div>
+        
+        <div class="content">
+            <div class="auth-section">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('login')">Login</div>
+                    <div class="tab" onclick="switchTab('register')">Register</div>
+                </div>
+                
+                <div id="login-tab" class="tab-content active">
+                    <h2>User Login</h2>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginUsername">Username</label>
+                            <input type="text" id="loginUsername" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn">Login</button>
+                    </form>
+                </div>
+                
+                <div id="register-tab" class="tab-content">
+                    <h2>User Registration</h2>
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label for="registerUsername">Username</label>
+                            <input type="text" id="registerUsername" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail">Email (optional)</label>
+                            <input type="email" id="registerEmail">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword">Password</label>
+                            <input type="password" id="registerPassword" required>
+                            
+                            <div class="password-requirements">
+                                <h4>Password Requirements:</h4>
+                                <div class="requirement" data-requirement="length">
+                                    <span class="requirement-icon"></span>
+                                    <span class="requirement-text">At least 8 characters</span>
+                                </div>
+                                <div class="requirement" data-requirement="uppercase">
+                                    <span class="requirement-icon"></span>
+                                    <span class="requirement-text">1 uppercase letter</span>
+                                </div>
+                                <div class="requirement" data-requirement="lowercase">
+                                    <span class="requirement-icon"></span>
+                                    <span class="requirement-text">1 lowercase letter</span>
+                                </div>
+                                <div class="requirement" data-requirement="number">
+                                    <span class="requirement-icon"></span>
+                                    <span class="requirement-text">1 number</span>
+                                </div>
+                                <div class="requirement" data-requirement="symbol">
+                                    <span class="requirement-icon"></span>
+                                    <span class="requirement-text">1 special character (!@#$%^&*()_+-=[]{}|;:,.<>?)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn" id="registerBtn" disabled>Register</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="status-section">
+                <h2>Authentication Status</h2>
+                <div id="statusContainer">
+                    <div class="status-card">
+                        <h3>Welcome!</h3>
+                        <p>Please login or register to get started.</p>
+                    </div>
+                </div>
+                
+                <div id="tokenSection" class="hidden">
+                    <h3>JWT Token</h3>
+                    <div id="tokenDisplay" class="token-display"></div>
+                    <button onclick="verifyToken()" class="btn" style="margin-top: 15px;">Verify Token</button>
+                </div>
+                
+                <div id="usersSection" class="hidden">
+                    <h3>Database Users</h3>
+                    <button onclick="loadUsers()" class="btn" style="margin-top: 15px;">Load Users</button>
+                    <div id="usersDisplay" class="token-display" style="margin-top: 15px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentToken = null;
+        let currentUser = null;
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        function showStatus(message, type = 'info') {
+            const container = document.getElementById('statusContainer');
+            container.innerHTML = `
+                <div class="status-card ${type}">
+                    <h3>${type === 'success' ? '✅ Success' : type === 'error' ? '❌ Error' : 'ℹ️ Info'}</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function showToken(token) {
+            currentToken = token;
+            document.getElementById('tokenDisplay').textContent = token;
+            document.getElementById('tokenSection').classList.remove('hidden');
+            // Users section will be shown/hidden based on admin status
+        }
+
+        async function makeRequest(url, method, data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(url, options);
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || 'Request failed');
+                }
+                
+                return result;
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const result = await makeRequest('/login', 'POST', { username, password });
+                
+                currentUser = result.user;
+                const isAdmin = result.role === 'admin';
+                const adminStatus = isAdmin ? ' (Admin)' : '';
+                
+                showStatus(`Welcome back, ${result.user}!${adminStatus} Login successful.`, 'success');
+                showToken(result.token);
+                
+                // Show admin features only for admins
+                if (isAdmin) {
+                    document.getElementById('usersSection').classList.remove('hidden');
+                    showStatus(`Admin access granted! You can view database users.`, 'success');
+                } else {
+                    document.getElementById('usersSection').classList.add('hidden');
+                    showStatus(`Regular user access. Database features are admin-only.`, 'info');
+                }
+                
+                // Clear form
+                document.getElementById('loginForm').reset();
+                
+            } catch (error) {
+                showStatus(`Login failed: ${error.message}`, 'error');
+            }
+        });
+
+        // Register form handler
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            
+            const data = { username, password };
+            if (email) data.email = email;
+            
+            try {
+                const result = await makeRequest('/register', 'POST', data);
+                
+                showStatus(`Registration successful! You can now login with username: ${username}`, 'success');
+                
+                // Clear form
+                document.getElementById('registerForm').reset();
+                
+            } catch (error) {
+                showStatus(`Registration failed: ${error.message}`, 'error');
+            }
+        });
+
+        // Token verification
+        async function verifyToken() {
+            if (!currentToken) {
+                showStatus('No token to verify', 'error');
+                return;
+            }
+            
+            try {
+                const result = await makeRequest('/verify', 'POST', { token: currentToken });
+                
+                showStatus(`Token is valid! User: ${result.user}, Expires: ${new Date(result.expires_at * 1000).toLocaleString()}`, 'success');
+                
+            } catch (error) {
+                showStatus(`Token verification failed: ${error.message}`, 'error');
+                // Clear invalid token
+                currentToken = null;
+                document.getElementById('tokenSection').classList.add('hidden');
+            }
+        }
+
+        // Password validation function
+        function validatePassword(password) {
+            const requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /\d/.test(password),
+                symbol: /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)
+            };
+            
+            // Update visual indicators
+            Object.keys(requirements).forEach(req => {
+                const element = document.querySelector(`[data-requirement="${req}"]`);
+                if (element) {
+                    element.classList.remove('met', 'not-met');
+                    if (requirements[req]) {
+                        element.classList.add('met');
+                    } else {
+                        element.classList.add('not-met');
+                    }
+                }
+            });
+            
+            // Enable/disable register button
+            const registerBtn = document.getElementById('registerBtn');
+            const allMet = Object.values(requirements).every(met => met);
+            registerBtn.disabled = !allMet;
+            
+            return requirements;
+        }
+
+        // Add password validation listener
+        document.getElementById('registerPassword').addEventListener('input', function() {
+            validatePassword(this.value);
+        });
+
+        // Load users from database
+        async function loadUsers() {
+            try {
+                const options = {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                };
+                
+                const response = await fetch('/users', options);
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || 'Request failed');
+                }
+                
+                let usersHtml = '<h4>Registered Users:</h4>';
+                result.users.forEach(user => {
+                    const createdDate = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A';
+                    const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Never';
+                    const roleBadge = user.role === 'admin' ? '<span style="background: #dc3545; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.7rem;">ADMIN</span>' : '';
+                    
+                    usersHtml += `
+                        <div style="margin-bottom: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <strong>${user.username}</strong> ${roleBadge}${user.email ? ` (${user.email})` : ''}<br>
+                            <small>Created: ${createdDate} | Last Login: ${lastLogin}</small>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('usersDisplay').innerHTML = usersHtml;
+                showStatus(`Loaded ${result.total_users} users from database`, 'success');
+                
+            } catch (error) {
+                showStatus(`Failed to load users: ${error.message}`, 'error');
+            }
+        }
+
+        // Test with pre-existing users
+        window.addEventListener('load', () => {
+            showStatus('Try logging in with: admin/Admin123! (admin) or user1/password123 (user)', 'info');
+        });
+    </script>
+</body>
+</html> 
